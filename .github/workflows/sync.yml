@@ -1,0 +1,31 @@
+name: Sync public community data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 1'
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Discover JSON data used by Annie Nikki Homes
+        run: python .github/sync_annie.py
+      - name: Commit discovered data
+        run: |
+          git config user.name 'Theaalux Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/vn-items.json data/source-meta.json
+          git diff --cached --quiet || git commit -m 'Sync public NSTT community item data'
+          git push
