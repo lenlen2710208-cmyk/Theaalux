@@ -2,6 +2,10 @@ name: Sync public community data
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data/**'
   schedule:
     - cron: '17 2 * * 1'
 
